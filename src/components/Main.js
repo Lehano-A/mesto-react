@@ -29,6 +29,7 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
                 setCards(cards)
 
             })
+            .catch((err) => { console.log('Ошибка: ', err) })
     }, [])
 
 
