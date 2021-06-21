@@ -5,7 +5,7 @@ import Main from './Main.js';
 import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
 import ImagePopup from './ImagePopup.js';
-import Card from './Card.js'
+
 
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(false);
+  const [selectedCard, setSelectedCard] = useState({});
 
 
   // ОБРАБОТЧИК КЛИКА НА КНОПКУ ПРОФАЙЛА
@@ -32,9 +32,8 @@ function App() {
   }
 
   // ОБРАБОТЧИК КЛИКА НА КАРТИНКУ В КАРТОЧКЕ
-  function handleCardClick(props) {
-    setSelectedCard(true);
-    setSelectedCard(props);
+  function handleCardClick(cardInfo) {
+    setSelectedCard(cardInfo);
   }
 
   // ОБРАБОТЧИК ЗАКРЫТИЯ ВСЕХ ПОПАПОВ
@@ -42,7 +41,7 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsAddPlacePopupOpen(false);
-    setSelectedCard(false);
+    setSelectedCard({});
   }
 
 
@@ -56,7 +55,6 @@ function App() {
         onAddPlace={handleAddPlaceClick}
         onEditAvatar={handleEditAvatarClick}
         onCardClick={handleCardClick}
-        ComponentCard={Card}
       />
 
       <Footer />
