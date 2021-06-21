@@ -26,6 +26,7 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
                 setUserAvatar(userInfo.avatar)
                 setCards(dataInitialCards)
             })
+            .catch((err) => {console.log('Ошибка: ', err)})
     }, [])
 
 
