@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from './../utils/api.js';
-
+import Card from './Card.js'
 
 function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentCard }) {
 
@@ -10,27 +10,25 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
     const [cards, setCards] = useState([])
 
 
-    // ПОЛУЧЕНИЕ ДАННЫХ ПРОФАЙЛА ОТ СЕРВЕРА
+    // ПОЛУЧЕНИЕ ДАННЫХ ПРОФАЙЛА И ДАННЫХ КАРТОЧКИ ОТ СЕРВЕРА
     useEffect(() => {
-        api.getUserInfo()
-            .then((res) => {
-                setUserName(res.name);
-                setUserDescription(res.about);
-                setUserAvatar(res.avatar)
+
+
+
+        Promise.all([api.getUserInfo(), api.getDataInitialCards()])
+            .then((result) => {
+
+                const userInfo = result[0];
+                const dataInitialCards = result[1]
+
+                setUserName(userInfo.name);
+                setUserDescription(userInfo.about);
+                setUserAvatar(userInfo.avatar)
+                setCards(dataInitialCards)
             })
-            .catch((err) => { console.log('Ошибка: ', err) })
-    })
-
-
-    //ПОЛУЧЕНИЕ ДАННЫХ КАРТОЧКИ ОТ СЕРВЕРА
-    useEffect(() => {
-        api.getDataInitialCards()
-            .then((cards) => {
-                setCards(cards)
-
-            })
-            .catch((err) => { console.log('Ошибка: ', err) })
     }, [])
+
+
 
 
     return (
@@ -62,7 +60,7 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
             ПРИ СРАБАТЫВАНИИ ОБРАБОТЧИКА onCardClick В Card, ПОЛУЧАЕМ ОТТУДА ДАННЫЕ КАРТОЧКИ
             И ОТПРАВЛЯЕМ ИХ В КОМПОНЕНТ App, ЧТОБЫ ПЕРЕДАТЬ ИХ В КОМПОНЕНТ ImagePopup */}
                 {cards.map((item) => {
-                    return (<ComponentCard onCardClick={onCardClick} key={item._id} {...item} />)
+                    return (<Card onCardClick={onCardClick} key={item._id} {...item} />)
                 })}
             </section>
 
