@@ -7,7 +7,7 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
 
     const currentUser = React.useContext(CurrentUserContext) // ПОДПИСКА НА КОНТЕКСТ
     const [cards, setCards] = useState([])
-    
+
 
     // ПОЛУЧЕНИЕ ДАННЫХ КАРТОЧКИ ОТ СЕРВЕРА
     useEffect(() => {
@@ -21,24 +21,42 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
 
     // ОБРАБОТЧИК ЛАЙКА
     function handleCardLike(card) {
-
+        //ПРОВЕРКА ЦЕЛЕВОЙ КАРТОЧКИ НА НАЛИЧИЕ МОЕГО ЛАЙКА
         const isLiked = card.likes.some((profile) => { return profile._id === currentUser._id });
 
+        // ЕСЛИ ЛАЙК УЖЕ ЕСТЬ, ТО ЕГО УБИРАЕМ
         if (isLiked === true) {
-            api.deleteLikes(card._id)
+            const apiLike = api.deleteLikes(card._id)
+            apiLikeDislike(apiLike, card)
 
-                .then((targetCard) => {
-                    setCards((cards) => cards.map((c) => c._id === card._id ? targetCard : c))
-                });
-
+            // ЕСЛИ ЛАЙКА НЕТ, ТО ЕГО ДОБАВЛЯЕМ
         } else {
-            api.plusNumberLikes(card._id)
-                .then((targetCard) => {
-                    setCards((cards) => cards.map((c) => c._id === card._id ? targetCard : c))
-
-                });
+            const apiDislike = api.plusNumberLikes(card._id)
+            apiLikeDislike(apiDislike, card)
         }
     }
+
+
+    function apiLikeDislike(urlApi, card) {
+        urlApi
+            .then((targetCard) => {
+                setCards(cards.map((cardFromArray) => cardFromArray._id === card._id ? targetCard : cardFromArray))
+            });
+    }
+
+
+
+    function handleCardDelete(card) {
+        const isOwn = card.owner._id === currentUser._id;
+
+        if (isOwn === true) {
+            api.deleteCardFromServer(card._id)
+            .then((targetCard) => {
+                setCards(cards.filter((cardFromArray) => cardFromArray._id !== card._id))
+            })
+        } 
+    }
+
 
 
     return (
@@ -71,7 +89,7 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
             И ОТПРАВЛЯЕМ ИХ В КОМПОНЕНТ App, ЧТОБЫ ПЕРЕДАТЬ ИХ В КОМПОНЕНТ ImagePopup */}
                 {cards.map((item) => {
                     {/* console.log(item) */ }
-                    return (<Card onCardLike={handleCardLike} onCardClick={onCardClick} key={item._id} {...item} />)
+                    return (<Card onCardDelete={handleCardDelete} onCardLike={handleCardLike} onCardClick={onCardClick} key={item._id} {...item} />)
                 })}
             </section>
 
