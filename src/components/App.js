@@ -7,7 +7,7 @@ import PopupWithForm from './PopupWithForm.js';
 import ImagePopup from './ImagePopup.js';
 import api from './../utils/api.js';
 import { CurrentUserContext } from './../contexts/CurrentUserContext.js'
-
+import EditProfilePopup from './EditProfilePopup.js'
 
 function App() {
 
@@ -75,20 +75,13 @@ function App() {
           onClose={closeAllPopups}
         />
 
+        <EditProfilePopup 
+        isOpen={isEditProfilePopupOpen} 
+        onClose={closeAllPopups} 
+        />
 
-        {/* ПОПАП ПРОФИЛЯ */}
-        <PopupWithForm title={'Редактировать профиль'} name={'edit-profile'} isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}>
-          <label className="popup__box-input-span">
-            <input id="popup-name" autoComplete="off" type="text" className="popup__input" placeholder="Ваше имя"
-              name="name" minLength="2" maxLength="40" required />
-            <span className="popup__input-error popup-name-error"></span>
-          </label>
-          <label className="popup__box-input-span">
-            <input id="popup-status" autoComplete="off" type="text" className="popup__input" placeholder="О себе"
-              name="status" minLength="2" maxLength="200" required />
-            <span className="popup__input-error popup-status-error"></span>
-          </label>
-        </PopupWithForm>
+
+      
 
 
         {/* ПОПАП ОБНОВЛЕНИЯ АВАТАРА */}
