@@ -1,22 +1,46 @@
-import React, { useState } from 'react';
-import PopupWithForm from './PopupWithForm';
+import React, { useState, useEffect } from 'react';
+import PopupWithForm from './PopupWithForm.js';
+import { CurrentUserContext } from './../contexts/CurrentUserContext.js'
 
-function EditProfilePopup(props) {
+function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
 
-    const [name, setName] = useState()
-    const [description, setDescription] = useState()
+    const currentUser = React.useContext(CurrentUserContext)
+console.log(currentUser)
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
 
 
-    function handleChangeName() {
-        'test'
+
+    function handleChangeName(e) {
+        setName(e.target.value)
     }
 
-    function handleChangeDescription() {
-        'test'
+    function handleChangeDescription(e) {
+        setDescription(e.target.value)
     }
+
+    function handleSubmit(e) {
+
+        e.preventDefault();
+
+        onUpdateUser({ //функция handleUpdateUser из App 
+            name,
+            about: description,
+        });
+
+        onClose();
+    }
+
+
+    // ЗНАЧЕНИЕ ПОЛЕЙ ИМЕНИ И ОПИСАНИЯ ПРОФИЛЯ - ПО УМОЛЧАНИЮ
+    useEffect(() => {
+        setName(currentUser.name)
+        setDescription(currentUser.about)
+    }, [currentUser])
+
 
     return (
-        <PopupWithForm title={'Редактировать профиль'} name={'edit-profile'} isOpen={props.isEditProfilePopupOpen} onClose={props.closeAllPopups}>
+        <PopupWithForm title={'Редактировать профиль'} name={'edit-profile'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
             <label className="popup__box-input-span">
                 <input value={name} onChange={handleChangeName} id="popup-name" autoComplete="off" type="text" className="popup__input" placeholder="Ваше имя"
                     name="name" minLength="2" maxLength="40" required />

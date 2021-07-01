@@ -46,7 +46,7 @@ class Api {
       },
       body: JSON.stringify({
         name: data.name,
-        about: data.status
+        about: data.about
       })
     })
       .then((result) => {
@@ -144,7 +144,7 @@ class Api {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        avatar: url.link,
+        avatar: url.avatar,
       })
     })
       .then((result) => {

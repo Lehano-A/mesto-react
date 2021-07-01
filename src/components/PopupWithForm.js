@@ -1,12 +1,8 @@
 import React from 'react'
 
+function PopupWithForm({ title, name, children, isOpen, onClose, onSubmit}) {
 
-function PopupWithForm({ title, name, children, isOpen, onClose }) {
-
-    function handleSubmit(evt) {
-        evt.preventDefault();
-    }
-
+ 
     return (
 
         <div className={`popup popup_type_${name} ${isOpen && 'popup_opened'}`} >
@@ -15,7 +11,7 @@ function PopupWithForm({ title, name, children, isOpen, onClose }) {
                 <button onClick={onClose} type="reset" className="popup__button-close"></button>
                 <h3 className="popup__title">{title}</h3>
 
-                <form onSubmit={handleSubmit} className="popup__form" method="POST" name={name} noValidate>
+                <form onSubmit={onSubmit} className="popup__form" method="POST" name={name} noValidate>
                     {/* children - ВСТАВЛЯЕТ НУЖНОЕ КОЛИЧЕСТВО ПОЛЕЙ ДЛЯ ОПРЕДЕЛЁННОЙ ФОРМЫ */}
                     {children}
                     <button type="submit" className="popup__button-save">Сохранить</button>

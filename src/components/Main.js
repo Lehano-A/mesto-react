@@ -36,7 +36,7 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
         }
     }
 
-
+    //ЗАПРОС К СЕРВЕРУ НА ЛАЙК/ДИЗЛАЙК (ШАБЛОН) 
     function apiLikeDislike(urlApi, card) {
         urlApi
             .then((targetCard) => {
@@ -51,10 +51,10 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
 
         if (isOwn === true) {
             api.deleteCardFromServer(card._id)
-            .then((targetCard) => {
-                setCards(cards.filter((cardFromArray) => cardFromArray._id !== card._id))
-            })
-        } 
+                .then((targetCard) => {
+                    setCards(cards.filter((cardFromArray) => cardFromArray._id !== card._id))
+                })
+        }
     }
 
 
