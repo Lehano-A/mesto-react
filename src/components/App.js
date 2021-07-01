@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import './../index.css';
 import Header from './Header.js';
 import Main from './Main.js';
@@ -6,8 +6,9 @@ import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
 import ImagePopup from './ImagePopup.js';
 import api from './../utils/api.js';
-import { CurrentUserContext } from './../contexts/CurrentUserContext.js'
-import EditProfilePopup from './EditProfilePopup.js'
+import { CurrentUserContext } from './../contexts/CurrentUserContext.js';
+import EditProfilePopup from './EditProfilePopup.js';
+import EditAvatarPopup from './EditAvatarPopup.js';
 
 function App() {
 
@@ -20,12 +21,13 @@ function App() {
 
   useEffect(() => {
     api.getUserInfo()
-    .then((res) => {return setCurrentUser(res)})
-    .catch((err) => {console.log('Ошибка: ', err)})
-    }, [])
+      .then((res) => { return setCurrentUser(res) })
+      .catch((err) => { console.log('Ошибка: ', err) })
+  }, [])
 
 
-  
+  // console.log(currentUser)
+
 
   // ОБРАБОТЧИК КЛИКА НА КНОПКУ ПРОФАЙЛА
   function handleEditProfileClick() {
@@ -56,6 +58,34 @@ function App() {
   }
 
 
+
+  function handleUpdateUser(data) {
+    api.formEditDataProfile(data)
+      .then((res) => {
+        setCurrentUser({
+          name: res.name,
+          about: res.about,
+          avatar: res.avatar,
+        })
+      })
+      .catch((err) => { console.log('Ошибка: ', err) })
+  };
+
+
+  function handleUpdateAvatar(url) {
+    api.changeAvatarProfile(url)
+      .then((res) => {
+        setCurrentUser({
+          name: res.name,
+          about: res.about,
+          avatar: res.avatar,
+        })
+      })
+      .catch((err) => { console.log('Ошибка: ', err) })
+  };
+
+
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page__container">
@@ -75,23 +105,17 @@ function App() {
           onClose={closeAllPopups}
         />
 
-        <EditProfilePopup 
-        isOpen={isEditProfilePopupOpen} 
-        onClose={closeAllPopups} 
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser}
         />
 
-
-      
-
-
-        {/* ПОПАП ОБНОВЛЕНИЯ АВАТАРА */}
-        <PopupWithForm title={'Обновить аватар'} name={'edit-avatar'} isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
-          <label className="popup__box-input-span">
-            <input id="edit-avatar" defaultValue="" type="url" autoComplete="off" className="popup__input"
-              placeholder="Ссылка на фото" name="link" required />
-            <span className="popup__input-error edit-avatar-error"></span>
-          </label>
-        </PopupWithForm>
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
+        />
 
 
         {/* ПОПАП ДОБАВЛЕНИЯ НОВОЙ КАРТОЧКИ */}
