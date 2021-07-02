@@ -5,7 +5,7 @@ import { CurrentUserContext } from './../contexts/CurrentUserContext.js'
 function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
 
     const currentUser = React.useContext(CurrentUserContext)
-console.log(currentUser)
+
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
 
@@ -15,9 +15,11 @@ console.log(currentUser)
         setName(e.target.value)
     }
 
+    
     function handleChangeDescription(e) {
         setDescription(e.target.value)
     }
+
 
     function handleSubmit(e) {
 
@@ -34,6 +36,7 @@ console.log(currentUser)
 
     // ЗНАЧЕНИЕ ПОЛЕЙ ИМЕНИ И ОПИСАНИЯ ПРОФИЛЯ - ПО УМОЛЧАНИЮ
     useEffect(() => {
+        console.log(currentUser)
         setName(currentUser.name)
         setDescription(currentUser.about)
     }, [currentUser])
