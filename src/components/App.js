@@ -1,24 +1,30 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './../index.css';
 import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
-import PopupWithForm from './PopupWithForm.js';
 import ImagePopup from './ImagePopup.js';
 import api from './../utils/api.js';
 import { CurrentUserContext } from './../contexts/CurrentUserContext.js';
 import EditProfilePopup from './EditProfilePopup.js';
 import EditAvatarPopup from './EditAvatarPopup.js';
+import AddPlacePopup from './AddPlacePopup.js';
+import AreYouSurePopup from './AreYouSurePopup.js';
 
 function App() {
 
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isAreYouSurePopupOpen, setIsAreYouSurePopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
+  const [dataCardFromAreYouSure, setDataCardFromAreYouSure] = useState({})
 
-  const [currentUser, setCurrentUser] = useState('');
+  const [currentUser, setCurrentUser] = useState({});
+  const [cards, setCards] = useState([])
 
+
+  // ПОЛУЧЕНИЕ ДАННЫХ ПРОФАЙЛА ОТ СЕРВЕРА
   useEffect(() => {
     api.getUserInfo()
       .then((res) => { return setCurrentUser(res) })
@@ -26,7 +32,15 @@ function App() {
   }, [])
 
 
-  // console.log(currentUser)
+  // ПОЛУЧЕНИЕ ДАННЫХ КАРТОЧКИ ОТ СЕРВЕРА
+  useEffect(() => {
+    api.getDataInitialCards()
+      .then((result) => {
+        setCards(result)
+      })
+      .catch((err) => { console.log('Ошибка: ', err) })
+  }, [])
+
 
 
   // ОБРАБОТЧИК КЛИКА НА КНОПКУ ПРОФАЙЛА
@@ -34,31 +48,38 @@ function App() {
     setIsEditProfilePopupOpen(true);
   }
 
+
   // ОБРАБОТЧИК КЛИКА НА АВАТАР
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
   }
+
 
   // ОБРАБОТЧИК КЛИКА НА КНОПКУ ДОБАВЛЕНИЯ НОВОЙ КАРТОЧКИ
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true);
   }
 
+
   // ОБРАБОТЧИК КЛИКА НА КАРТИНКУ В КАРТОЧКЕ
   function handleCardClick(cardInfo) {
     setSelectedCard(cardInfo);
   }
 
+
   // ОБРАБОТЧИК ЗАКРЫТИЯ ВСЕХ ПОПАПОВ
   function closeAllPopups() {
+
     setIsEditProfilePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    setIsAreYouSurePopupOpen(false);
     setSelectedCard({});
+
   }
 
 
-
+  // ОБАБОТЧИК ОБНОВЛЕНИЯ ДАННЫХ ПРОФАЙЛА
   function handleUpdateUser(data) {
     api.formEditDataProfile(data)
       .then((res) => {
@@ -72,6 +93,7 @@ function App() {
   };
 
 
+  // ОБРАБОТЧИК ОБНОВЛЕНИЯ АВАТАРА
   function handleUpdateAvatar(url) {
     api.changeAvatarProfile(url)
       .then((res) => {
@@ -85,20 +107,98 @@ function App() {
   };
 
 
+  // ОБРАБОТЧИК ДОБАВЛЕНИЯ НОВОЙ КАРТОЧКИ
+  function handleAddPlaceSubmit(data) {
+
+    api.sendDataNewCardAtServer(data)
+      .then((res) => {
+        console.log(res)
+        setCards([res, ...cards])
+      })
+      .catch((err) => { console.log('Ошибка: ', err) })
+  };
+
+
+  // ОБРАБОТЧИК ЛАЙКА/ДИЗЛАЙКА
+  function handleCardLike(card) {
+    //ПРОВЕРКА ЦЕЛЕВОЙ КАРТОЧКИ НА НАЛИЧИЕ МОЕГО ЛАЙКА
+    const isLiked = card.likes.some((profile) => { return profile._id === currentUser._id });
+
+    // ЕСЛИ ЛАЙК УЖЕ ЕСТЬ, ТО ЕГО УБИРАЕМ
+    if (isLiked === true) {
+      const apiLike = api.deleteLikes(card._id)
+      apiLikeDislike(apiLike, card)
+
+      // ЕСЛИ ЛАЙКА НЕТ, ТО ЕГО ДОБАВЛЯЕМ
+    } else {
+      const apiDislike = api.plusNumberLikes(card._id)
+      apiLikeDislike(apiDislike, card)
+    }
+  };
+
+
+  //ЗАПРОС К СЕРВЕРУ НА ЛАЙК/ДИЗЛАЙК (ШАБЛОН) 
+  function apiLikeDislike(urlApi, card) {
+    urlApi
+      .then((targetCard) => {
+        setCards(cards.map((cardFromArray) => cardFromArray._id === card._id ? targetCard : cardFromArray))
+      });
+  };
+
+
+  // ОБРАБОТЧИК УДАЛЕНИЯ КАРТОЧКИ
+  function handleCardDelete(card) {
+
+    const isOwn = card.owner._id === currentUser._id;
+
+    if (isOwn === true) {
+      api.deleteCardFromServer(card._id)
+        .then(() => {
+          setCards(cards.filter((cardFromArray) => cardFromArray._id !== card._id))
+        })
+    }
+  };
+
+
+  // ОБРАБОТЧИК ОТКРЫТИЯ ПОПАПА "ВЫ УВЕРЕНЫ?"
+  function handleAreYouSure() {
+    setIsAreYouSurePopupOpen(true)
+  }
+
+
+  // ДАННЫЕ КАРТОЧКИ ПОЛУЧЕННЫЕ ИЗ Card ПРИ ОТКРЫТИИ ПОПАПА AreYouSure
+  function handleDataAreYouSure(data) {
+    setDataCardFromAreYouSure(data)
+  }
+
+
+  // ОБРАБОТЧИК УДАЛЕНИЯ КАРТОЧКИ ЧЕРЕЗ AreYouSure
+  function handleCardDeleteAreYouSure() {
+    dataCardFromAreYouSure.onCardDelete(dataCardFromAreYouSure)
+    setDataCardFromAreYouSure({})
+  }
+
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page__container">
 
         <Header />
+
         <Main
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleAddPlaceClick}
           onEditAvatar={handleEditAvatarClick}
           onCardClick={handleCardClick}
+          cards={cards}
+          onCardLike={handleCardLike}
+          onCardDelete={handleCardDelete}
+          onAgreeDelete={handleAreYouSure}
+          dataFromAreYouSure={handleDataAreYouSure}
         />
 
-        <Footer />
+        <Footer
+        />
 
         <ImagePopup
           card={selectedCard}
@@ -117,26 +217,17 @@ function App() {
           onUpdateAvatar={handleUpdateAvatar}
         />
 
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlaceSubmit}
+        />
 
-        {/* ПОПАП ДОБАВЛЕНИЯ НОВОЙ КАРТОЧКИ */}
-        <PopupWithForm title={'Новое место'} name={'add-new-card'} isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
-          <label className="popup__box-input-span">
-            <input id="add-new-card-title" defaultValue="" autoComplete="off" type="text" className="popup__input"
-              placeholder="Название" name="name" minLength="2" maxLength="30" required />
-            <span className="popup__input-error add-new-card-title-error"></span>
-          </label>
-          <label className="popup__box-input-span">
-            <input id="add-new-card-link" defaultValue="" type="url" autoComplete="off" className="popup__input"
-              placeholder="Ссылка на картинку" name="link" required />
-            <span className="popup__input-error add-new-card-link-error"></span>
-          </label>
-        </PopupWithForm>
-
-
-        {/* ПОПАП - ВЫ УВЕРЕНЫ? */}
-        <PopupWithForm title={'Вы уверены?'} name={'are-you-sure'}>
-        </PopupWithForm>
-
+        <AreYouSurePopup
+          isOpen={isAreYouSurePopupOpen}
+          onClose={closeAllPopups}
+          onDelete={handleCardDeleteAreYouSure}
+        />
 
       </div>
     </CurrentUserContext.Provider>

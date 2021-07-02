@@ -1,61 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import api from './../utils/api.js';
+import React from 'react';
 import Card from './Card.js'
 import { CurrentUserContext } from './../contexts/CurrentUserContext.js'
 
-function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentCard }) {
+function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, cards, onCardLike, onAgreeDelete, dataFromAreYouSure, onCardDelete }) {
 
     const currentUser = React.useContext(CurrentUserContext) // ПОДПИСКА НА КОНТЕКСТ
-    const [cards, setCards] = useState([])
-
-
-    // ПОЛУЧЕНИЕ ДАННЫХ КАРТОЧКИ ОТ СЕРВЕРА
-    useEffect(() => {
-        api.getDataInitialCards()
-            .then((result) => {
-                setCards(result)
-            })
-            .catch((err) => { console.log('Ошибка: ', err) })
-    }, [])
-
-
-    // ОБРАБОТЧИК ЛАЙКА
-    function handleCardLike(card) {
-        //ПРОВЕРКА ЦЕЛЕВОЙ КАРТОЧКИ НА НАЛИЧИЕ МОЕГО ЛАЙКА
-        const isLiked = card.likes.some((profile) => { return profile._id === currentUser._id });
-
-        // ЕСЛИ ЛАЙК УЖЕ ЕСТЬ, ТО ЕГО УБИРАЕМ
-        if (isLiked === true) {
-            const apiLike = api.deleteLikes(card._id)
-            apiLikeDislike(apiLike, card)
-
-            // ЕСЛИ ЛАЙКА НЕТ, ТО ЕГО ДОБАВЛЯЕМ
-        } else {
-            const apiDislike = api.plusNumberLikes(card._id)
-            apiLikeDislike(apiDislike, card)
-        }
-    }
-
-    //ЗАПРОС К СЕРВЕРУ НА ЛАЙК/ДИЗЛАЙК (ШАБЛОН) 
-    function apiLikeDislike(urlApi, card) {
-        urlApi
-            .then((targetCard) => {
-                setCards(cards.map((cardFromArray) => cardFromArray._id === card._id ? targetCard : cardFromArray))
-            });
-    }
-
-
-
-    function handleCardDelete(card) {
-        const isOwn = card.owner._id === currentUser._id;
-
-        if (isOwn === true) {
-            api.deleteCardFromServer(card._id)
-                .then((targetCard) => {
-                    setCards(cards.filter((cardFromArray) => cardFromArray._id !== card._id))
-                })
-        }
-    }
 
 
 
@@ -88,8 +37,18 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, ComponentC
             ПРИ СРАБАТЫВАНИИ ОБРАБОТЧИКА onCardClick В Card, ПОЛУЧАЕМ ОТТУДА ДАННЫЕ КАРТОЧКИ
             И ОТПРАВЛЯЕМ ИХ В КОМПОНЕНТ App, ЧТОБЫ ПЕРЕДАТЬ ИХ В КОМПОНЕНТ ImagePopup */}
                 {cards.map((item) => {
-                    {/* console.log(item) */ }
-                    return (<Card onCardDelete={handleCardDelete} onCardLike={handleCardLike} onCardClick={onCardClick} key={item._id} {...item} />)
+
+                    return (
+                        <Card
+                            dataFromAreYouSure={dataFromAreYouSure}
+                            onCardDelete={onCardDelete}
+                            onAgreeDelete={onAgreeDelete}
+                            onCardLike={onCardLike}
+                            onCardClick={onCardClick}
+                            key={item._id}
+                            {...item}
+
+                        />)
                 })}
             </section>
 

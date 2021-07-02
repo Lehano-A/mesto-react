@@ -10,19 +10,18 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
     const [description, setDescription] = useState('')
 
 
-
+    // ОБРАБОТЧИК ПОЛЯ NAME
     function handleChangeName(e) {
         setName(e.target.value)
     }
 
-    
+    // ОБРАБОТЧИК ПОЛЯ DESCRIPTION
     function handleChangeDescription(e) {
         setDescription(e.target.value)
     }
 
 
     function handleSubmit(e) {
-
         e.preventDefault();
 
         onUpdateUser({ //функция handleUpdateUser из App 
@@ -36,10 +35,15 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
 
     // ЗНАЧЕНИЕ ПОЛЕЙ ИМЕНИ И ОПИСАНИЯ ПРОФИЛЯ - ПО УМОЛЧАНИЮ
     useEffect(() => {
-        console.log(currentUser)
-        setName(currentUser.name)
-        setDescription(currentUser.about)
+        //ПРОВЕРКА НА НАЛИЧИЕ ЗНАЧЕНИЙ В КОНТЕКСТЕ (БЕЗ ПРОВЕРКИ ВЫПОЛЗАЕТ ОШИБКА)
+        if ((currentUser.name === undefined && currentUser.about === undefined)) {
+            return
+        } else {
+            setName(currentUser.name)
+            setDescription(currentUser.about)
+        }
     }, [currentUser])
+
 
 
     return (
