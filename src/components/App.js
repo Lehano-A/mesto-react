@@ -29,7 +29,7 @@ function App() {
     api.getUserInfo()
       .then((res) => { return setCurrentUser(res) })
       .catch((err) => { console.log('Ошибка: ', err) })
-  }, [])
+  }, []);
 
 
   // ПОЛУЧЕНИЕ ДАННЫХ КАРТОЧКИ ОТ СЕРВЕРА
@@ -39,32 +39,32 @@ function App() {
         setCards(result)
       })
       .catch((err) => { console.log('Ошибка: ', err) })
-  }, [])
+  }, []);
 
 
 
   // ОБРАБОТЧИК КЛИКА НА КНОПКУ ПРОФАЙЛА
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
-  }
+  };
 
 
   // ОБРАБОТЧИК КЛИКА НА АВАТАР
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
-  }
+  };
 
 
   // ОБРАБОТЧИК КЛИКА НА КНОПКУ ДОБАВЛЕНИЯ НОВОЙ КАРТОЧКИ
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true);
-  }
+  };
 
 
   // ОБРАБОТЧИК КЛИКА НА КАРТИНКУ В КАРТОЧКЕ
   function handleCardClick(cardInfo) {
     setSelectedCard(cardInfo);
-  }
+  };
 
 
   // ОБРАБОТЧИК ЗАКРЫТИЯ ВСЕХ ПОПАПОВ
@@ -75,19 +75,15 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsAreYouSurePopupOpen(false);
     setSelectedCard({});
-
-  }
+  };
 
 
   // ОБАБОТЧИК ОБНОВЛЕНИЯ ДАННЫХ ПРОФАЙЛА
   function handleUpdateUser(data) {
     api.formEditDataProfile(data)
       .then((res) => {
-        setCurrentUser({
-          name: res.name,
-          about: res.about,
-          avatar: res.avatar,
-        })
+        setCurrentUser(res)
+        closeAllPopups();
       })
       .catch((err) => { console.log('Ошибка: ', err) })
   };
@@ -97,23 +93,23 @@ function App() {
   function handleUpdateAvatar(url) {
     api.changeAvatarProfile(url)
       .then((res) => {
-        setCurrentUser({
-          name: res.name,
-          about: res.about,
-          avatar: res.avatar,
-        })
+        setCurrentUser(res)
+        closeAllPopups();
       })
       .catch((err) => { console.log('Ошибка: ', err) })
   };
 
 
   // ОБРАБОТЧИК ДОБАВЛЕНИЯ НОВОЙ КАРТОЧКИ
-  function handleAddPlaceSubmit(data) {
+  function handleAddPlaceSubmit(data, setName, setLink) {
 
     api.sendDataNewCardAtServer(data)
       .then((res) => {
-        console.log(res)
+
         setCards([res, ...cards])
+        closeAllPopups();
+        setName('');
+        setLink('');
       })
       .catch((err) => { console.log('Ошибка: ', err) })
   };
@@ -142,7 +138,9 @@ function App() {
     urlApi
       .then((targetCard) => {
         setCards(cards.map((cardFromArray) => cardFromArray._id === card._id ? targetCard : cardFromArray))
-      });
+      })
+      .catch((err) => { console.log('Ошибка: ', err) })
+
   };
 
 
@@ -155,7 +153,9 @@ function App() {
       api.deleteCardFromServer(card._id)
         .then(() => {
           setCards(cards.filter((cardFromArray) => cardFromArray._id !== card._id))
+          closeAllPopups();
         })
+        .catch((err) => { console.log('Ошибка: ', err) })
     }
   };
 

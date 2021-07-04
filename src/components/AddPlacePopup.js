@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PopupWithForm from './PopupWithForm.js';
 
 
@@ -24,13 +24,20 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
         onAddPlace({
             name: name,
             link: link,
-        })
-
-        onClose()
+        },
+            setName,
+            setLink)
     }
 
+    useEffect(() => {
+
+        setName('');
+        setLink('');
+    }, [isOpen])
+
+
     return (
-        <PopupWithForm title={'Новое место'} name={'add-new-card'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
+        <PopupWithForm buttonText='Добавить' title='Новое место' name={'add-new-card'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
             <label className="popup__box-input-span">
                 <input value={name} onChange={handleChangeName} id="add-new-card-title" autoComplete="off" type="text" className="popup__input"
                     placeholder="Название" name="name" minLength="2" maxLength="30" required />

@@ -4,6 +4,7 @@ import { CurrentUserContext } from './../contexts/CurrentUserContext.js'
 
 function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
 
+
     const currentUser = React.useContext(CurrentUserContext)
 
     const [name, setName] = useState('')
@@ -28,8 +29,6 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
             name,
             about: description,
         });
-
-        onClose();
     }
 
 
@@ -42,12 +41,12 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
             setName(currentUser.name)
             setDescription(currentUser.about)
         }
-    }, [currentUser])
+    }, [currentUser, isOpen])
 
 
 
     return (
-        <PopupWithForm title={'Редактировать профиль'} name={'edit-profile'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
+        <PopupWithForm buttonText='Сохранить' title='Редактировать профиль' name={'edit-profile'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
             <label className="popup__box-input-span">
                 <input value={name} onChange={handleChangeName} id="popup-name" autoComplete="off" type="text" className="popup__input" placeholder="Ваше имя"
                     name="name" minLength="2" maxLength="40" required />

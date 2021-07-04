@@ -12,13 +12,11 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
         onUpdateAvatar({
             avatar: input.current.value,
         });
-
-        onClose();
     }
 
     return (
 
-        <PopupWithForm title={'Обновить аватар'} name={'edit-avatar'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
+        <PopupWithForm buttonText='Обновить' title='Обновить аватар' name={'edit-avatar'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
             <label className="popup__box-input-span">
                 <input ref={input} id="edit-avatar" defaultValue="" type="url" autoComplete="off" className="popup__input"
                     placeholder="Ссылка на фото" name="link" required />

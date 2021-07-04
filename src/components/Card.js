@@ -20,7 +20,6 @@ function Card(props) { //props - это данные одной карточки
     );
 
 
-
     function handleClick() {
         props.onCardClick(props) // функция handleCardClick из App
     }
@@ -37,7 +36,7 @@ function Card(props) { //props - это данные одной карточки
     }
 
 
-    return (<article key={props._id} className="element">
+    return (<article className="element">
         <img onClick={handleClick} src={props.link} className="element__image" alt={props.name} />
         <button onClick={handleAreYouSure} className={cardDeleteButtonClassName}></button>
         <div className="element__title-icon-box">
