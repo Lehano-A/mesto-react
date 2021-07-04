@@ -47,7 +47,6 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, cards, onC
                             onCardClick={onCardClick}
                             key={item._id}
                             {...item}
-
                         />)
                 })}
             </section>

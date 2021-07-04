@@ -8,11 +8,10 @@ function AreYouSurePopup({ isOpen, onClose, onDelete }) {
     function handleSubmit(e) {
         e.preventDefault();
         onDelete();
-        onClose();
     }
 
     return (
-        <PopupWithForm title={'Вы уверены?'} name={'are-you-sure'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
+        <PopupWithForm buttonText='Удалить' title='Вы уверены?' name={'are-you-sure'} isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
         </PopupWithForm>
     )
 
